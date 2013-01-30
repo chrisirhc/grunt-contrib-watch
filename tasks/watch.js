@@ -1,5 +1,6 @@
 /*
- * grunt-contrib-watch
+ * grunt-inc-watch
+ * based off grunt-contrib-watch
  * http://gruntjs.com/
  *
  * Copyright (c) 2012 "Cowboy" Ben Alman, contributors
@@ -18,8 +19,130 @@ module.exports = function(grunt) {
     interrupt: false
   };
 
-  grunt.registerTask('watch', 'Run predefined tasks whenever watched files change.', function(target) {
-    var name = this.name || 'watch';
+  var defaultTask = 'inc-watch',
+      startTask   = defaultTask + ':start',
+      endTask     = defaultTask + ':end';
+
+  var changeTypes = ['deleted', 'added', 'changed'];
+
+  function getChangesFileName(targetName) {
+    return '.' + defaultTask + (targetName.length > 0 ? '-' + targetName : '');
+  }
+
+  var changesQueue = grunt.util.async;
+
+  function writeChanges(targetName, status, filepath) {
+    grunt.log.debug('Writing changes into ' + getChangesFileName(targetName));
+    fs.appendFileSync(getChangesFileName(targetName), status[0].toUpperCase() + ' ' + filepath + '\n');
+  }
+
+  function readChanges(targetName) {
+    var changesFileName = getChangesFileName(targetName);
+    grunt.log.debug('Reading changes from ' + changesFileName);
+    var changesStr = fs.existsSync(changesFileName) ? fs.readFileSync(changesFileName, 'utf-8') : '';
+    var changes = changesStr.split('\n')
+                  .filter(function (el) {
+                    return el && el !== '';
+                  })
+                  .map(function (el) {
+                    var changeType = el[0];
+                    var filepath = el.substr(2);
+                    switch (changeType) {
+                      case 'D':
+                      changeType = 'deleted';
+                      break;
+                      case 'A':
+                      changeType = 'added';
+                      break;
+                      case 'C':
+                      changeType = 'changed';
+                      break;
+                    }
+                    return {
+                      type: changeType,
+                      filepath: filepath
+                    };
+                  });
+    return changes;
+  }
+
+  function clearChanges(targetName) {
+    var changesFileName = getChangesFileName(targetName);
+    grunt.log.debug('Clearing changes from ' + changesFileName);
+    grunt.file.delete(changesFileName);
+  }
+
+  function modifyTask(taskName, addedOrChangedFilePaths) {
+    function findMatching(fileConfig) {
+      var newFileConfig = [];
+      fileConfig.forEach(function (mapping) {
+        var newMapping = {};
+        grunt.log.debug('Attempting to match ');
+        newMapping.src = grunt.file.match(mapping.orig.src, addedOrChangedFilePaths);
+        if (newMapping.src.length > 0) {
+          if (mapping.dest && mapping.dest !== 'src') {
+            newMapping.dest = mapping.dest;
+          }
+          newFileConfig.push(newMapping);
+        }
+      });
+      return newFileConfig;
+    }
+    // TODO: Check if this is the proper way of obtaining settings
+    var fileConfigKey = taskName.replace(/:/g, '.');
+    var fileConfig = grunt.config(fileConfigKey);
+    grunt.log.debug('Modifying files in ', fileConfigKey);
+    fileConfig = grunt.task.normalizeMultiTaskFiles(fileConfig);
+    if (fileConfig && Array.isArray(fileConfig) && fileConfig.length > 0) {
+      // Replace the file options
+      grunt.config(fileConfigKey + '.files', findMatching(fileConfig));
+      var fullConfig = grunt.config(fileConfigKey);
+      // Remove src and dest if specified
+      delete fullConfig.src;
+      delete fullConfig.dest;
+    }
+  }
+
+  var changesRead = null;
+
+  grunt.registerTask(defaultTask, 'Run predefined tasks whenever watched files change.', function(target, targetName) {
+    var name = this.name || defaultTask;
+
+    if (target === 'start') {
+      name = targetName || '';
+      changesRead = readChanges(name);
+      var filePaths = {};
+      ['added', 'deleted', 'changed'].forEach(function (changeType) {
+        filePaths[changeType] = changesRead
+                                .filter(function (change) {
+                                  return change.type === changeType;
+                                })
+                                .map(function (change) {
+                                  return change.filepath;
+                                });
+      });
+      var addedOrChangedFilePaths = filePaths['added'].concat(filePaths['changed']);
+      var targetConfigKey = defaultTask + '.' + name;
+      grunt.config(targetConfigKey + '.changes', changesRead);
+      grunt.config(targetConfigKey + '.filePaths', filePaths);
+
+      // Get subtasks
+      var tasks = grunt.config(targetConfigKey + '.tasks');
+      // Get tasks from config and iterate through their configuration to feed in only changed files
+      tasks.forEach(function (task) {
+        modifyTask(task, addedOrChangedFilePaths);
+      });
+      return;
+    } else if (target === 'end') {
+      name = targetName || '';
+      // TODO: Remove those lines? Non-blocking?
+      // TODO: Remove target files that were mapped one to one in tasks?
+
+      // Remove the watch target file
+      clearChanges(name);
+      return;
+    }
+
     this.requiresConfig(name);
 
     // Build an array of files/tasks objects
@@ -30,9 +153,10 @@ module.exports = function(grunt) {
 
     targets = targets.map(function(target) {
       // Fail if any required config properties have been omitted
+      var targetName = target;
       target = [name, target];
       this.requiresConfig(target.concat('files'), target.concat('tasks'));
-      return grunt.config(target);
+      return grunt.util._.extend( grunt.config(target), {name: targetName} );
     }, this);
 
     // Allow "basic" non-target format
@@ -107,6 +231,11 @@ module.exports = function(grunt) {
       // Default options per target
       var options = grunt.util._.defaults(target.options || {}, defaults);
 
+      console.log(target.tasks);
+      target.tasks.unshift(startTask + (target.name ? ':' + target.name : ''));
+      target.tasks.push(endTask + (target.name ? ':' + target.name : ''));
+      console.log(target.tasks);
+
       // Create watcher per target
       var gaze = new Gaze(patterns, options, function(err) {
         if (err) {
@@ -117,6 +246,7 @@ module.exports = function(grunt) {
         // On changed/added/deleted
         this.on('all', function(status, filepath) {
           filepath = path.relative(process.cwd(), filepath);
+          writeChanges(target.name, status, filepath);
           changedFiles[filepath] = status;
           runTasks(i, target.tasks, options);
         });
