@@ -23,21 +23,42 @@ module.exports = function(grunt) {
       startTask   = defaultTask + ':start',
       endTask     = defaultTask + ':end';
 
-  var changeTypes = ['deleted', 'added', 'changed'];
+  var changeCodesToTypes = {
+    A: 'added',
+    D: 'deleted',
+    C: 'changed'
+  };
+  var changeTypesToCodes = {};
+  Object.keys(changeCodesToTypes).forEach(function (code) {
+    changeTypesToCodes[ changeCodesToTypes[code] ] = code;
+  });
 
-  function getChangesFileName(targetName) {
-    return '.' + defaultTask + (targetName.length > 0 ? '-' + targetName : '');
+  var workingDirectory = '.grunt/grunt-incremental/';
+
+  function getChangesFilePath(targetName) {
+    return workingDirectory + '.' + defaultTask + (targetName && targetName.length > 0 ? '-' + targetName : '');
   }
 
   var changesQueue = grunt.util.async;
 
+  function initWorkingDir() {
+    var dirs = workingDirectory.split('/');
+    dirs.forEach(function (dir, i) {
+      var subpath = path.join.apply(path, dirs.slice(0, i+1));
+      if (!fs.existsSync(subpath)) {
+        fs.mkdirSync(subpath);
+      }
+    })
+  }
+
   function writeChanges(targetName, status, filepath) {
-    grunt.log.debug('Writing changes into ' + getChangesFileName(targetName));
-    fs.appendFileSync(getChangesFileName(targetName), status[0].toUpperCase() + ' ' + filepath + '\n');
+    grunt.log.debug('Writing changes into ' + getChangesFilePath(targetName));
+    // TODO: Not sure if I should be ignoring the --no-write option here
+    fs.appendFileSync(getChangesFilePath(targetName), changeTypesToCodes[status] + ' ' + filepath + '\n');
   }
 
   function readChanges(targetName) {
-    var changesFileName = getChangesFileName(targetName);
+    var changesFileName = getChangesFilePath(targetName);
     grunt.log.debug('Reading changes from ' + changesFileName);
     var changesStr = fs.existsSync(changesFileName) ? fs.readFileSync(changesFileName, 'utf-8') : '';
     var changes = changesStr.split('\n')
@@ -45,19 +66,9 @@ module.exports = function(grunt) {
                     return el && el !== '';
                   })
                   .map(function (el) {
-                    var changeType = el[0];
+                    var changeCode = el[0];
                     var filepath = el.substr(2);
-                    switch (changeType) {
-                      case 'D':
-                      changeType = 'deleted';
-                      break;
-                      case 'A':
-                      changeType = 'added';
-                      break;
-                      case 'C':
-                      changeType = 'changed';
-                      break;
-                    }
+                    var changeType = changeCodesToTypes[ changeCode ];
                     return {
                       type: changeType,
                       filepath: filepath
@@ -67,7 +78,7 @@ module.exports = function(grunt) {
   }
 
   function clearChanges(targetName) {
-    var changesFileName = getChangesFileName(targetName);
+    var changesFileName = getChangesFilePath(targetName);
     grunt.log.debug('Clearing changes from ' + changesFileName);
     grunt.file.delete(changesFileName);
   }
@@ -77,7 +88,6 @@ module.exports = function(grunt) {
       var newFileConfig = [];
       fileConfig.forEach(function (mapping) {
         var newSrc;
-        // var newMapping = {};
         // One to one
         if (mapping.src.length === 1) {
           if ( addedOrChangedFilePaths.indexOf(mapping.src[0]) !== -1) {
@@ -96,6 +106,7 @@ module.exports = function(grunt) {
             }
           }
         }
+        // TODO: Support deleted files. It should rebuild the files that might've used it.
       });
       return newFileConfig;
     }
@@ -146,14 +157,13 @@ module.exports = function(grunt) {
       return;
     } else if (target === 'end') {
       name = targetName || '';
-      // TODO: Remove those lines? Non-blocking?
-      // TODO: Remove target files that were mapped one to one in tasks?
 
       // Remove the watch target file
       clearChanges(name);
       return;
     }
 
+    initWorkingDir();
     this.requiresConfig(name);
 
     // Build an array of files/tasks objects
@@ -242,6 +252,7 @@ module.exports = function(grunt) {
       // Default options per target
       var options = grunt.util._.defaults(target.options || {}, defaults);
 
+      // TODO: Start task may need to be right before each task to do incremental build
       target.tasks.unshift(startTask + (target.name ? ':' + target.name : ''));
       target.tasks.push(endTask + (target.name ? ':' + target.name : ''));
 
