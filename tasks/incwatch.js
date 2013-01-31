@@ -134,7 +134,7 @@ module.exports = function(grunt) {
       name = targetName || '';
       changesRead = readChanges(name);
       var filePaths = {};
-      ['added', 'deleted', 'changed'].forEach(function (changeType) {
+      Object.keys(changeTypesToCodes).forEach(function (changeType) {
         filePaths[changeType] = changesRead
                                 .filter(function (change) {
                                   return change.type === changeType;
@@ -144,7 +144,7 @@ module.exports = function(grunt) {
                                 });
       });
       var addedOrChangedFilePaths = filePaths['added'].concat(filePaths['changed']);
-      var targetConfigKey = defaultTask + '.' + name;
+      var targetConfigKey = defaultTask + (name ? '.' + name : '') ;
       grunt.config(targetConfigKey + '.changes', changesRead);
       grunt.config(targetConfigKey + '.filePaths', filePaths);
 
