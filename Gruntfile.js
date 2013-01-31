@@ -25,7 +25,7 @@ module.exports = function(grunt) {
     },
 
     // Watch
-    'inc-watch': {
+    'incwatch': {
       all: {
         files: ['<%= jshint.all %>'],
         tasks: ['jshint', 'nodeunit'],

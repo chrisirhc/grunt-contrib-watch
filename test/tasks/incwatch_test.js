@@ -110,7 +110,7 @@ exports.watchConfig = {
   oneTarget: function(test) {
     test.expect(2);
     var cwd = path.resolve(fixtures, 'oneTarget');
-    var assertWatch = assertTask('watch', {cwd:cwd});
+    var assertWatch = assertTask('incwatch', {cwd:cwd});
     assertWatch(function() {
       var write = 'var test = true;';
       grunt.file.write(path.join(cwd, 'lib', 'one.js'), write);
@@ -124,7 +124,7 @@ exports.watchConfig = {
   multiTargetsTriggerOneNotTwo: function(test) {
     test.expect(2);
     var cwd = path.resolve(fixtures, 'multiTargets');
-    var assertWatch = assertTask('watch', {cwd:cwd});
+    var assertWatch = assertTask('incwatch', {cwd:cwd});
     assertWatch(function() {
       var write = 'var test = true;';
       grunt.file.write(path.join(cwd, 'lib', 'one.js'), write);
@@ -138,7 +138,7 @@ exports.watchConfig = {
   multiTargetsTriggerBoth: function(test) {
     test.expect(2);
     var cwd = path.resolve(fixtures, 'multiTargets');
-    var assertWatch = assertTask('watch', {cwd:cwd});
+    var assertWatch = assertTask('incwatch', {cwd:cwd});
     assertWatch([function() {
       grunt.file.write(path.join(cwd, 'lib', 'one.js'), 'var test = true;');
     }, function() {
@@ -153,7 +153,7 @@ exports.watchConfig = {
   spawnOneAtATime: function(test) {
     test.expect(1);
     var cwd = path.resolve(fixtures, 'multiTargets');
-    var assertWatch = assertTask('watch', {cwd:cwd});
+    var assertWatch = assertTask('incwatch', {cwd:cwd});
     assertWatch(function() {
       grunt.file.write(path.join(cwd, 'lib', 'wait.js'), 'var wait = false;');
       setTimeout(function() {
@@ -168,7 +168,7 @@ exports.watchConfig = {
   interrupt: function(test) {
     test.expect(1);
     var cwd = path.resolve(fixtures, 'multiTargets');
-    var assertWatch = assertTask('watch', {cwd:cwd});
+    var assertWatch = assertTask('incwatch', {cwd:cwd});
     assertWatch(function() {
       grunt.file.write(path.join(cwd, 'lib', 'interrupt.js'), 'var interrupt = false;');
       setTimeout(function() {
@@ -183,7 +183,7 @@ exports.watchConfig = {
   failingTask: function(test) {
     test.expect(2);
     var cwd = path.resolve(fixtures, 'multiTargets');
-    var assertWatch = assertTask('watch', {cwd:cwd});
+    var assertWatch = assertTask('incwatch', {cwd:cwd});
     assertWatch(function() {
       grunt.file.write(path.join(cwd, 'lib', 'fail.js'), 'var fail = false;');
     }, function(result) {

@@ -8,7 +8,7 @@ module.exports = function(grunt) {
       interrupt: { message: 'I want to be interrupted', wait: 5000 },
       fail: { fail: 1, message: 'This task should fail' }
     },
-    watch: {
+    incwatch: {
       one: {
         files: ['lib/one.js'],
         tasks: ['echo:one']

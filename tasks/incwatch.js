@@ -1,8 +1,8 @@
 /*
- * grunt-inc-watch
- * based off grunt-contrib-watch
- * http://gruntjs.com/
+ * grunt-incremental
+ * Copyright (c) 2013 Chris Chua, contributors
  *
+ * Forked from https://github.com/gruntjs/grunt-contrib-watch
  * Copyright (c) 2012 "Cowboy" Ben Alman, contributors
  * Licensed under the MIT license.
  */
@@ -19,7 +19,7 @@ module.exports = function(grunt) {
     interrupt: false
   };
 
-  var defaultTask = 'inc-watch',
+  var defaultTask = 'incwatch',
       startTask   = defaultTask + ':start',
       endTask     = defaultTask + ':end';
 
@@ -242,10 +242,8 @@ module.exports = function(grunt) {
       // Default options per target
       var options = grunt.util._.defaults(target.options || {}, defaults);
 
-      console.log(target.tasks);
       target.tasks.unshift(startTask + (target.name ? ':' + target.name : ''));
       target.tasks.push(endTask + (target.name ? ':' + target.name : ''));
-      console.log(target.tasks);
 
       // Create watcher per target
       var gaze = new Gaze(patterns, options, function(err) {

@@ -4,7 +4,7 @@ module.exports = function(grunt) {
     echo: {
       files: ['lib/*.js']
     },
-    watch: {
+    incwatch: {
       files: ['<%= echo.files %>'],
       tasks: ['echo']
     }

@@ -1,23 +1,23 @@
 {
-  "name": "grunt-inc-watch",
-  "description": "Run predefined tasks whenever watched file patterns are added, changed or deleted.",
+  "name": "grunt-incremental",
+  "description": "Run predefined tasks on changed files whenever watched file patterns are added, changed or deleted.",
   "version": "0.0.1",
-  // "homepage": "https://github.com/gruntjs/grunt-contrib-watch",
+  "homepage": "https://github.com/chrisirhc/grunt-incremental",
   "author": {
-    "name": "Grunt Team",
+    "name": "Chris Chua",
     "url": "http://gruntjs.com/"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/gruntjs/grunt-contrib-watch.git"
+    "url": "git://github.com/chrisirhc/grunt-incremental.git"
   },
   "bugs": {
-    "url": "https://github.com/gruntjs/grunt-contrib-watch/issues"
+    "url": "https://github.com/chrisirhc/grunt-incremental/issues"
   },
   "licenses": [
     {
       "type": "MIT",
-      "url": "https://github.com/gruntjs/grunt-contrib-watch/blob/master/LICENSE-MIT"
+      "url": "https://github.com/chrisirhc/grunt-incremental/blob/master/LICENSE-MIT"
     }
   ],
   "main": "Gruntfile.js",
@@ -38,6 +38,8 @@
   },
   "keywords": [
     "gruntplugin",
-    "watch"
+    "watch",
+    "incwatch",
+    "incremental"
   ]
 }
