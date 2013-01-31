@@ -1,21 +1,23 @@
-# grunt-contrib-watch [![Build Status](https://secure.travis-ci.org/gruntjs/grunt-contrib-watch.png?branch=master)](http://travis-ci.org/gruntjs/grunt-contrib-watch)
+# grunt-incremental
+<!-- [![Build Status](https://secure.travis-ci.org/chrisirhc/grunt-incremental.png?branch=master)](http://travis-ci.org/chrisirhc/grunt-incremental) -->
 
-> Run predefined tasks whenever watched file patterns are added, changed or deleted.
+> Run predefined tasks only on changed files whenever watched file patterns are added, changed or deleted.
 
+_This is work in progress. More details about what's coming up or the plan for this project can be found on [this gist](https://gist.github.com/4678098)._
 
 ## Getting Started
 If you haven't used [grunt][] before, be sure to check out the [Getting Started][] guide, as it explains how to create a [gruntfile][Getting Started] as well as install and use grunt plugins. Once you're familiar with that process, install this plugin with this command:
 
 ```shell
-npm install grunt-contrib-watch --save-dev
+npm install grunt-incremental --save-dev
 ```
 
 [grunt]: http://gruntjs.com/
 [Getting Started]: https://github.com/gruntjs/grunt/blob/devel/docs/getting_started.md
 
 
-## Watch task
-_Run this task with the `grunt watch` command._
+## Incwatch task
+_Run this task with the `grunt incwatch` command._
 
 ### Overview
 
