@@ -76,14 +76,25 @@ module.exports = function(grunt) {
     function findMatching(fileConfig) {
       var newFileConfig = [];
       fileConfig.forEach(function (mapping) {
-        var newMapping = {};
-        grunt.log.debug('Attempting to match ');
-        newMapping.src = grunt.file.match(mapping.orig.src, addedOrChangedFilePaths);
-        if (newMapping.src.length > 0) {
-          if (mapping.dest && mapping.dest !== 'src') {
-            newMapping.dest = mapping.dest;
+        var newSrc;
+        // var newMapping = {};
+        // One to one
+        if (mapping.src.length === 1) {
+          if ( addedOrChangedFilePaths.indexOf(mapping.src[0]) !== -1) {
+            newFileConfig.push({ src: mapping.src, dest: mapping.dest });
           }
-          newFileConfig.push(newMapping);
+        }
+        // Many to one
+        else {
+          var intersect = grunt.util._.intersection(mapping.src, addedOrChangedFilePaths);
+          if (intersect.length > 0) {
+            // When it's all to src, or to a folder use only the intersect
+            if (mapping.dest === 'src' || grunt.file.isDir(mapping.dest)) {
+              newFileConfig.push({ src: intersect, dest: mapping.dest });
+            } else {
+              newFileConfig.push({ src: mapping.src, dest: mapping.dest });
+            }
+          }
         }
       });
       return newFileConfig;
