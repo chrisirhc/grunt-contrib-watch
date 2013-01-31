@@ -5,6 +5,13 @@
 
 _This is work in progress. More details about what's coming up or the plan for this project can be found on [this gist](https://gist.github.com/4678098)._
 
+## TODO
+
+* Use a database that supports concurrency to be aware of changes during the build process
+* Support queueing of tasks
+* Support interrupt
+* Better support for other methods of specifying files, instead of using the `files` options and other formats besides those mentioned on this.
+
 ## Getting Started
 If you haven't used [grunt][] before, be sure to check out the [Getting Started][] guide, as it explains how to create a [gruntfile][Getting Started] as well as install and use grunt plugins. Once you're familiar with that process, install this plugin with this command:
 
