@@ -2,10 +2,12 @@ module.exports = function(grunt) {
   'use strict';
   grunt.initConfig({
     echo: {
-      files: ['lib/*.js']
+      files: [{
+          src: ['lib/*.js']
+      }]
     },
     incwatch: {
-      files: ['<%= echo.files %>'],
+      files: '<%= echo.files[0].src %>',
       tasks: ['echo']
     }
   });
