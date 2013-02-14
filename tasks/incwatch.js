@@ -227,6 +227,7 @@ module.exports = function(grunt) {
         changedFiles = Object.create(null);
 
         // Spawn the tasks as a child process
+        var start = Date.now();
         spawned[i] = grunt.util.spawn({
           // Spawn with the grunt bin
           grunt: true,
@@ -237,7 +238,13 @@ module.exports = function(grunt) {
         }, function(err, res, code) {
           // Spawn is done
           delete spawned[i];
-          grunt.log.writeln('').write(waiting);
+          var msg = String(
+            'Completed in ' +
+            Number((Date.now() - start) / 1000).toFixed(2) +
+            's at ' +
+            (new Date()).toString()
+          ).cyan;
+          grunt.log.writeln('').write(msg + ' - ' + waiting);
         });
       }
     }, 250);
@@ -246,8 +253,11 @@ module.exports = function(grunt) {
       if (typeof target.files === 'string') {
         target.files = [target.files];
       }
-      // Get patterns to glob for this target
-      var patterns = grunt.file.expand(target.files);
+
+      // Process into raw patterns
+      var patterns = grunt.util._.chain(target.files).flatten().map(function(pattern) {
+        return grunt.config.process(pattern);
+      }).value();
 
       // Default options per target
       var options = grunt.util._.defaults(target.options || {}, defaults);

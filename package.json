@@ -1,7 +1,7 @@
 {
   "name": "grunt-incremental",
   "description": "Run predefined tasks on changed files whenever watched file patterns are added, changed or deleted.",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "homepage": "https://github.com/chrisirhc/grunt-incremental",
   "author": {
     "name": "Chris Chua",
@@ -28,13 +28,13 @@
     "test": "grunt nodeunit -v"
   },
   "dependencies": {
-    "gaze": "~0.3.2"
+    "gaze": "~0.3.3"
   },
   "devDependencies": {
-    "grunt": "~0.4.0rc5",
-    "grunt-contrib-jshint": "~0.1.1rc5",
-    "grunt-contrib-nodeunit": "~0.1.2rc5",
-    "grunt-contrib-internal": "*"
+    "grunt": "0.4.0rc7",
+    "grunt-contrib-jshint": "0.1.1rc6",
+    "grunt-contrib-nodeunit": "0.1.2rc6",
+    "grunt-contrib-internal": "~0.1.2"
   },
   "keywords": [
     "gruntplugin",

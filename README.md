@@ -20,7 +20,7 @@ npm install grunt-incremental --save-dev
 ```
 
 [grunt]: http://gruntjs.com/
-[Getting Started]: https://github.com/gruntjs/grunt/blob/devel/docs/getting_started.md
+[Getting Started]: http://gruntjs.com/getting-started
 
 
 ## Incwatch task
@@ -136,6 +136,7 @@ Likely because of an enthusiastic pattern trying to watch thousands of files. Su
 
 ## Release History
 
+ * 2013-01-17   v0.2.0rc7   Updating grunt/gruntplugin dependencies to rc6. Changing in-development grunt/gruntplugin dependency versions from tilde version ranges to specific versions.
  * 2013-01-08   v0.2.0rc5   Updating to work with grunt v0.4.0rc5.
  * 2012-12-14   v0.2.0a   Conversion to grunt v0.4 conventions. Remove node v0.6 and grunt v0.3 support. Allow watch task to be renamed. Use grunt.util.spawn "grunt" option. Updated to gaze@0.3.0, forceWatchMethod option removed.
  * 2012-10-31   v0.1.4   Prevent watch from spawning duplicate watch tasks
@@ -148,4 +149,4 @@ Likely because of an enthusiastic pattern trying to watch thousands of files. Su
 
 Task submitted by [Kyle Robinson Young](http://dontkry.com)
 
-*This file was generated on Mon Jan 14 2013 23:40:50.*
+*This file was generated on Tue Feb 05 2013 12:44:01.*
