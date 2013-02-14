@@ -48,7 +48,7 @@ module.exports = function(grunt) {
       if (!fs.existsSync(subpath)) {
         fs.mkdirSync(subpath);
       }
-    })
+    });
   }
 
   function writeChanges(targetName, status, filepath) {
