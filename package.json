@@ -28,7 +28,7 @@
     "test": "grunt nodeunit -v"
   },
   "dependencies": {
-    "gaze": "~0.3.4",
+    "gaze": "git://github.com/chrisirhc/gaze.git#26dc8a1",
     "tiny-lr": "0.0.4"
   },
   "devDependencies": {
